@@ -1,3 +1,6 @@
+// sender3 - sensor node
+// sends encrypted sensor value to cloud
+
 #include <mcp2515.h>
 #include <LiquidCrystal_I2C.h>
 

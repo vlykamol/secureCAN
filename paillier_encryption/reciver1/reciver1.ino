@@ -1,3 +1,7 @@
+// reciiver (client)
+// recives encrypted process data from middle_cloude(reciver-sender)
+// decrypt final message
+
 #include <mcp2515.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -27,35 +31,20 @@ void loop() {
   // put your main code here, to run repeatedly:
   lcd.setCursor(0, 0);
   Serial.println();
-  long cipherText1 = 0;
-  long cipherText2 = 0;
-  long distance = 0;
+  // long cipherText1 = 0;
+  long int cipherText2 = 0;
+  // long distance = 0;
   while (!(mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK)) {
-    if(canMsg.can_id == 0x046 ) {
-      distance = (canMsg.data[1] << 8) | canMsg.data[0];
-    }
-    if(canMsg.can_id == 0x047 ) {
-      cipherText1 = (canMsg.data[1] << 8) | canMsg.data[0];
-    }
     if(canMsg.can_id == 0x048 ) {
-      cipherText2 = (canMsg.data[1] << 8) | canMsg.data[0];
+      cipherText2 = ((long int)canMsg.data[0] << 24) | ((long int)canMsg.data[1] << 16) | ((long int)canMsg.data[2] << 8) | (long int)canMsg.data[3];
     }
   }
-  long decrypted1 = decrypt(cipherText1);
-  Serial.print("decrypted message from sender1 : ");
-  Serial.println(decrypted1);
-  lcd.print(decrypted1);
-  lcd.setCursor(0, 1);
+  Serial.print("encrypted message from sender2 : ");
+  Serial.println(cipherText2);
   long decrypted2 = decrypt(cipherText2);
   Serial.print("decrypted message from sender2 : ");
   Serial.println(decrypted2);
   lcd.print(decrypted2);
-  // delay(2000);
-  lcd.setCursor(5, 0);
-  long decryptedD = decrypt(distance);
-  Serial.print("decrypted distance from sender3 : ");
-  Serial.println(decryptedD);
-  lcd.print(decryptedD);
 }
 
 long decrypt(long c){

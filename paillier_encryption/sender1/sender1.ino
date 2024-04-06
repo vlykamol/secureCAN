@@ -1,3 +1,7 @@
+// sender1
+// sends encrypted data to cloud
+
+
 #include <mcp2515.h>
 
 struct can_frame canMsg1;
