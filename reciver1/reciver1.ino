@@ -1,5 +1,8 @@
 
 #include <mcp2515.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x3F, 16, 2);
 
 struct can_frame canMsg;
 MCP2515 mcp2515(10);
@@ -397,6 +400,9 @@ void present_decrypt(const uint8_t *cipher, const uint8_t *key, uint8_t *ans) {
 
 void setup() {
   Serial.begin(9600);
+  lcd.init();
+  lcd.clear();
+  lcd.backlight();
   
   mcp2515.reset();
   mcp2515.setBitrate(CAN_125KBPS);
@@ -406,29 +412,25 @@ void setup() {
 }
 
 void loop() {
+  lcd.setCursor(0, 0);
   uint8_t key[10] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99};
   uint8_t decrypted_plain[8] = {0, 0, 0, 0, 0, 0, 0, 0}; 
   uint8_t cipher[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   while (!(mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK)) {
-    float distance;
     if(canMsg.can_id == 0x048 ) {
-      // sensor_value  = word(canMsg.data[1], canMsg.data[0]);
-      // Serial.print(" Distance: ");
-      // Serial.println(sensor_value);
-      Serial.print("Cipher: ");
-      for(int i = 0; i < 8; ++i){ 
-        Serial.print(canMsg.data[i], HEX);
+      for(int i = 0; i < 8; ++i)
         cipher[i] = canMsg.data[i];
-      }
-      Serial.println();
     }
   }
   // decryption
   present_decrypt(cipher, key, decrypted_plain); 
   Serial.print("Decrypted Data: ");
+  
   for(int i = 0; i<8 ; ++i){ 
     Serial.print((char)decrypted_plain[i]);
+    lcd.print((char)decrypted_plain[i]);
   }
   Serial.println();
+
 }
 
