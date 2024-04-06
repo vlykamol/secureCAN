@@ -29,7 +29,11 @@ void loop() {
   Serial.println();
   long cipherText1 = 0;
   long cipherText2 = 0;
+  long distance = 0;
   while (!(mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK)) {
+    if(canMsg.can_id == 0x046 ) {
+      distance = (canMsg.data[1] << 8) | canMsg.data[0];
+    }
     if(canMsg.can_id == 0x047 ) {
       cipherText1 = (canMsg.data[1] << 8) | canMsg.data[0];
     }
@@ -47,6 +51,11 @@ void loop() {
   Serial.println(decrypted2);
   lcd.print(decrypted2);
   // delay(2000);
+  lcd.setCursor(5, 0);
+  long decryptedD = decrypt(distance);
+  Serial.print("decrypted distance from sender3 : ");
+  Serial.println(decryptedD);
+  lcd.print(decryptedD);
 }
 
 long decrypt(long c){
