@@ -1,3 +1,9 @@
+#include <mcp2515.h>
+
+struct can_frame canMsg1;
+MCP2515 mcp2515(10);
+
+
 long p = 13;
 long q = 11;
 long n = 143;
@@ -9,15 +15,25 @@ long mu = 87;
 
 void setup() {
   Serial.begin(9600);
-  // encryption till 142 with these parameters
-  long plainText = 142;
-  long cipherText = encrypt(plainText);
-  long decrypted = decrypt(cipherText);
+
+  mcp2515.reset();
+  mcp2515.setBitrate(CAN_125KBPS);
+  mcp2515.setNormalMode();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  // Serial.print("hello");
+  // encryption till 142 with these parameters
+  long plainText = 142;
+  long cipherText = encrypt(plainText);
+  Serial.print("plain text : ");
+  Serial.println(plainText);
+  canMsg1.can_id = 0x047;
+  canMsg1.can_dlc = 2;
+
+  canMsg1.data[0] = lowByte(cipherText);
+  canMsg1.data[1] = highByte(cipherText);
+  mcp2515.sendMessage(&canMsg1);
+  delay(2000);
 }
 
 long encrypt(long m){
@@ -29,23 +45,14 @@ long encrypt(long m){
   return cipherText3;
 }
 
-long decrypt(long c){
-  long d1 = power_mod(c, lamb, n_square) - 1;
-  long d2 = d1 / n * mu;
-  long d3 = d2 % n;
-  return d3;
-}
-
 // Function to compute (base^exp) % mod
 long power_mod(long base, long exp, long mod) {
   long result = 1;
-  base = base % mod; // Update base if it is >= mod
+  base = base % mod;
   while (exp > 0) {
-      // If exp is odd, multiply base with result
       if (exp % 2 == 1)
           result = (result * base) % mod;
-      // Now exp is even, divide it by 2
-      exp = exp >> 1; // Same as exp /= 2
+      exp = exp >> 1;
       base = (base * base) % mod;
   }
   return result;
