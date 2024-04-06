@@ -23,11 +23,11 @@ void setup() {
 
 void loop() {
   // encryption till 142 with these parameters
-  long plainText = 10;
+  long plainText = 12;
   long cipherText = encrypt(plainText);
   Serial.print("plain text : ");
   Serial.println(plainText);
-  canMsg1.can_id = 0x047;
+  canMsg1.can_id = 0x048;
   canMsg1.can_dlc = 2;
 
   canMsg1.data[0] = lowByte(cipherText);

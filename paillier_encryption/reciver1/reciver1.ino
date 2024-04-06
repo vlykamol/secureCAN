@@ -27,16 +27,26 @@ void loop() {
   // put your main code here, to run repeatedly:
   lcd.setCursor(0, 0);
   Serial.println();
-  long cipherText = 0;
+  long cipherText1 = 0;
+  long cipherText2 = 0;
   while (!(mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK)) {
     if(canMsg.can_id == 0x047 ) {
-      cipherText = (canMsg.data[1] << 8) | canMsg.data[0];
+      cipherText1 = (canMsg.data[1] << 8) | canMsg.data[0];
+    }
+    if(canMsg.can_id == 0x048 ) {
+      cipherText2 = (canMsg.data[1] << 8) | canMsg.data[0];
     }
   }
-  long decrypted = decrypt(cipherText);
-  Serial.print("decrypted message : ");
-  Serial.println(decrypted);
-  lcd.print(decrypted);
+  long decrypted1 = decrypt(cipherText1);
+  Serial.print("decrypted message from sender1 : ");
+  Serial.println(decrypted1);
+  lcd.print(decrypted1);
+  lcd.setCursor(0, 1);
+  long decrypted2 = decrypt(cipherText2);
+  Serial.print("decrypted message from sender2 : ");
+  Serial.println(decrypted2);
+  lcd.print(decrypted2);
+  // delay(2000);
 }
 
 long decrypt(long c){
