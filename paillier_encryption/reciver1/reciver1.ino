@@ -16,7 +16,6 @@ long lamb = 120;
 long mu = 87;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(9600);
   lcd.init();
   lcd.clear();
@@ -27,13 +26,10 @@ void setup() {
   mcp2515.setNormalMode();
 }
 
+long int cipherText2 = 0;
 void loop() {
-  // put your main code here, to run repeatedly:
   lcd.setCursor(0, 0);
   Serial.println();
-  // long cipherText1 = 0;
-  long int cipherText2 = 0;
-  // long distance = 0;
   while (!(mcp2515.readMessage(&canMsg) == MCP2515::ERROR_OK)) {
     if(canMsg.can_id == 0x048 ) {
       cipherText2 = ((long int)canMsg.data[0] << 24) | ((long int)canMsg.data[1] << 16) | ((long int)canMsg.data[2] << 8) | (long int)canMsg.data[3];

@@ -74,7 +74,7 @@ void loop() {
   canMsg1.data[0] = lowByte(cipherText);
   canMsg1.data[1] = highByte(cipherText);
   mcp2515.sendMessage(&canMsg1);
-  delay(2000);
+  delay(1000);
 }
 
 
