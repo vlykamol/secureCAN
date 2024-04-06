@@ -36,6 +36,7 @@ void loop() {
   long decrypted = decrypt(cipherText);
   Serial.print("decrypted message : ");
   Serial.println(decrypted);
+  lcd.print(decrypted);
 }
 
 long decrypt(long c){
